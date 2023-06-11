@@ -1,5 +1,5 @@
 URL = 'https://www.xbox.com/ru-RU/browse/games'
-NUMBER_OF_GAMES = 3
+NUMBER_OF_GAMES = 500
 
 SOURCE_FILE = 'files/source_page.html'
 URLS_FILE = 'files/urls.txt'

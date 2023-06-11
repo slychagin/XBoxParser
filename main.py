@@ -27,6 +27,8 @@ class XboxParser:
         self.url = URL
         self.source_file = SOURCE_FILE
         self.urls_file = URLS_FILE
+        self.session = requests.Session()
+        self.session.headers = HEADERS
         self.options = webdriver.ChromeOptions()
         self.options.add_experimental_option("detach", True)
         self.options.add_argument(f'user-agent={HEADERS["User-Agent"]}')
@@ -100,8 +102,8 @@ class XboxParser:
 
             # Get title, price data and release date
             title = self.get_title(soup)
-            price_data = self.get_price(soup)
             release_date = self.release_date(soup)
+            price_data = self.get_price(soup)
 
             games_data.append({
                 'title': title,
@@ -144,16 +146,19 @@ class XboxParser:
 
         return {'games_data': games_data, 'game_extras': game_extras}
 
-    @staticmethod
-    def get_soup(url, headers):
+    def get_soup(self, url, headers):
         """Send request to url and return soup"""
         try:
-            response = requests.get(url=url, headers=headers)
+            response = self.session.get(url=url)
             response.raise_for_status()
+            soup = BeautifulSoup(response.text, 'lxml')
+            return soup
+        except requests.exceptions.ConnectionError as err:
+            print(err)
         except requests.exceptions.HTTPError as err:
-            raise SystemExit(err)
-        soup = BeautifulSoup(response.text, 'lxml')
-        return soup
+            print(err)
+        except requests.exceptions.RequestException as err:
+            print(err)
 
     @staticmethod
     def get_title(soup_data):
@@ -193,6 +198,10 @@ class XboxParser:
                 return original_price, discount, discount_price
         except Exception as e:
             print(e)
+            original_price = '-'
+            discount = '-'
+            discount_price = '-'
+            return original_price, discount, discount_price
 
     @staticmethod
     def release_date(soup_data):
