@@ -1,5 +1,6 @@
 import time
 import random
+from typing import Tuple, List, Union
 
 import requests
 import pandas as pd
@@ -102,7 +103,7 @@ class XboxParser:
         count = 1
         urls_count = len(urls)
         for url in urls:
-            soup = self.get_soup(url, HEADERS)
+            soup = self.get_soup(url)
 
             # Get title, price data and release date
             title = self.get_title(soup)
@@ -121,7 +122,7 @@ class XboxParser:
             collection_urls = self.get_collection_urls(soup)
             if collection_urls:
                 for link in collection_urls:
-                    extra_soup = self.get_soup(link, HEADERS)
+                    extra_soup = self.get_soup(link)
                     title = self.get_title(extra_soup)
                     price_data = self.get_price(extra_soup)
                     release_date = self.release_date(extra_soup)
@@ -150,7 +151,7 @@ class XboxParser:
 
         return {'games_data': games_data, 'game_extras': game_extras}
 
-    def get_soup(self, url):
+    def get_soup(self, url) -> BeautifulSoup:
         """Send request to url and return soup"""
         try:
             response = self.session.get(url=url)
@@ -165,7 +166,7 @@ class XboxParser:
             print(err)
 
     @staticmethod
-    def get_title(soup_data):
+    def get_title(soup_data: BeautifulSoup) -> str:
         """Get game title"""
         try:
             title = soup_data.find(
@@ -177,7 +178,7 @@ class XboxParser:
             title = 'No title'
         return title
 
-    def get_price(self, soup_data):
+    def get_price(self, soup_data: BeautifulSoup) -> Tuple:
         """Get origin price, discount and price with discount"""
         try:
             price_data = soup_data.find(
@@ -190,7 +191,7 @@ class XboxParser:
                 original_price = price_data[0].text.strip(' USD$+')
                 try:
                     discount_price = price_data[1].text.strip(' USD$+')
-                    discount = self.get_discount(original_price, discount_price)
+                    discount = self.get_discount(float(original_price), float(discount_price))
                 except IndexError:
                     discount_price = '-'
                     discount = '-'
@@ -208,7 +209,7 @@ class XboxParser:
             return original_price, discount, discount_price
 
     @staticmethod
-    def release_date(soup_data):
+    def release_date(soup_data: BeautifulSoup) -> str:
         """Get release date"""
         try:
             release_date = soup_data.find(
@@ -222,13 +223,13 @@ class XboxParser:
         return release_date
 
     @staticmethod
-    def get_discount(org_price, dsc_price):
+    def get_discount(org_price: float, dsc_price: float) -> str:
         """Calculate and return discount"""
-        discount = round((float(org_price) - float(dsc_price)) / float(org_price) * 100)
+        discount = round((org_price - dsc_price) / org_price * 100)
         return f'{discount}%'
 
     @staticmethod
-    def get_collection_urls(soup_data):
+    def get_collection_urls(soup_data: BeautifulSoup) -> Union[list, None]:
         """Get url for games in collection"""
         try:
             a_tag_list = soup_data.find_all('a', string='ПЕРЕЙТИ К ИГРЕ')
@@ -239,7 +240,7 @@ class XboxParser:
         return urls
 
     @staticmethod
-    def get_game_extras(game_title, soup_data):
+    def get_game_extras(game_title: str, soup_data: BeautifulSoup) -> Union[List[dict], None]:
         """Get game extras"""
         try:
             # Get li list with extras and delete last hidden li without needed data
@@ -276,7 +277,7 @@ class XboxParser:
             extras = None
         return extras
 
-    def save_data_to_csv(self, games, extras):
+    def save_data_to_csv(self, games: List[dict], extras: List[dict]) -> None:
         """Save data to csv with pandas"""
         pd.DataFrame(games).to_csv(self.games_data_file, index=False, sep=';', encoding='utf-8-sig')
         pd.DataFrame(extras).to_csv(self.extras_data_file, index=False, sep=';', encoding='utf-8-sig')
