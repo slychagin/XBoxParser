@@ -14,6 +14,6 @@ Parser get data from XBox games
 Сначала запускается Selenium, открывает необходимое количество игр, чтобы данные по ним подгрузились, а после скачиваются ссылки по всем играм в необходимом количестве. Затем уже начинает работать bs4 в связке с requests. После парсинга данные сохраняются в csv файл с помощью pandas.
 
 #### Вы можете запустить этот проект локально просто сделав следующее:
-- `git clone https://github.com/slychagin/CoindeskParser.git`;
+- `git clone https://github.com/slychagin/XBoxParser.git`;
 - у вас должен быть установлен Python;
 - установите все зависимости из файла requirements.txt.
