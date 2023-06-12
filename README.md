@@ -1,5 +1,4 @@
 # XBoxParser
-
 ![made by](https://img.shields.io/badge/made_by-slychagin-green)
 ![python](https://img.shields.io/badge/python-v3.10.5-blue)
 ![bs4](https://img.shields.io/badge/bs4-red)
