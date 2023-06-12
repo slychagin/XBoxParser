@@ -1,12 +1,12 @@
 # XBoxParser
-Parser get data from XBox games
 
-# CoindeskParser
 ![made by](https://img.shields.io/badge/made_by-slychagin-green)
 ![python](https://img.shields.io/badge/python-v3.10.5-blue)
 ![bs4](https://img.shields.io/badge/bs4-red)
 ![selenium](https://img.shields.io/badge/selenium-blue)
 ![pandas](https://img.shields.io/badge/pandas-green)
+
+Parser get data from XBox games
 
 #### Games parser from https://www.xbox.com/ru-RU/games/all-games
 #
