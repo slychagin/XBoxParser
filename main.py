@@ -16,6 +16,8 @@ from input_data import (
     NUMBER_OF_GAMES,
     SOURCE_FILE,
     URLS_FILE,
+    GAMES_DATA_FILE,
+    EXTRAS_DATA_FILE,
     HEADERS,
     load_btn_selector
 )
@@ -27,6 +29,8 @@ class XboxParser:
         self.url = URL
         self.source_file = SOURCE_FILE
         self.urls_file = URLS_FILE
+        self.games_data_file = GAMES_DATA_FILE
+        self.extras_data_file = EXTRAS_DATA_FILE
         self.session = requests.Session()
         self.session.headers = HEADERS
         self.options = webdriver.ChromeOptions()
@@ -38,8 +42,8 @@ class XboxParser:
         )
         self.driver.maximize_window()
 
-    def get_html_source(self):
-        """Get html content with NUMBER_OF_GAMES games and save it to the html file"""
+    def get_html_source(self) -> None:
+        """Get html content with NUMBER_OF_GAMES and save it to the html file"""
         self.driver.get(self.url)
         wait = WebDriverWait(self.driver, 10)
 
@@ -68,7 +72,7 @@ class XboxParser:
             self.driver.close()
             self.driver.quit()
 
-    def get_game_urls(self):
+    def get_game_urls(self) -> None:
         """Get from html source file all urls"""
         with open(self.source_file, encoding='utf-8') as file:
             src = file.read()
@@ -146,7 +150,7 @@ class XboxParser:
 
         return {'games_data': games_data, 'game_extras': game_extras}
 
-    def get_soup(self, url, headers):
+    def get_soup(self, url):
         """Send request to url and return soup"""
         try:
             response = self.session.get(url=url)
@@ -197,7 +201,7 @@ class XboxParser:
                 discount_price = '-'
                 return original_price, discount, discount_price
         except Exception as e:
-            print(e)
+            # print(e)
             original_price = '-'
             discount = '-'
             discount_price = '-'
@@ -247,17 +251,17 @@ class XboxParser:
             # Get extras title and price
             extras = []
             for item in extras_list:
-                data = item.find('div', 'ProductCard-module__infoBox___M5x18')
-                extra_title = data.next_element.text.strip()
+                data_extra = item.find('div', 'ProductCard-module__infoBox___M5x18')
+                extra_title = data_extra.next_element.text.strip()
                 try:
-                    extra_price = data.find(
+                    extra_price = data_extra.find(
                         'span',
                         'Price-module__boldText___vmNHu Price-module__moreText___q5KoT '
                         'ProductCard-module__price___cs1xr Price-module__listedDiscountPrice___67yG1'
                     ).text.strip(' USD$+')
                 except Exception as e:
                     # print(e)
-                    extra_price = data.find(
+                    extra_price = data_extra.find(
                         'span',
                         'Price-module__boldText___vmNHu Price-module__moreText___q5KoT '
                         'ProductCard-module__price___cs1xr'
@@ -272,18 +276,24 @@ class XboxParser:
             extras = None
         return extras
 
-    @staticmethod
-    def save_data_to_csv(games, extras):
+    def save_data_to_csv(self, games, extras):
         """Save data to csv with pandas"""
-        pd.DataFrame(games).to_csv('files/games.csv', index=False, sep=';', encoding='utf-8-sig')
-        pd.DataFrame(extras).to_csv('files/extras.csv', index=False, sep=';', encoding='utf-8-sig')
+        pd.DataFrame(games).to_csv(self.games_data_file, index=False, sep=';', encoding='utf-8-sig')
+        pd.DataFrame(extras).to_csv(self.extras_data_file, index=False, sep=';', encoding='utf-8-sig')
 
 
 if __name__ == '__main__':
     parser = XboxParser()
+
+    start_time = time.perf_counter()
+
     parser.get_html_source()
     parser.get_game_urls()
-
     data = parser.get_game_data()
-
     parser.save_data_to_csv(data['games_data'], data['game_extras'])
+
+    print('Data saved to file!')
+
+    end_time = time.perf_counter()
+    total_time = end_time - start_time
+    print(f'{total_time:.4f} seconds')

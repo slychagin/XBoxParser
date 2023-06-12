@@ -1,8 +1,11 @@
 URL = 'https://www.xbox.com/ru-RU/browse/games'
-NUMBER_OF_GAMES = 500
+NUMBER_OF_GAMES = 5
 
 SOURCE_FILE = 'files/source_page.html'
 URLS_FILE = 'files/urls.txt'
+GAMES_DATA_FILE = 'files/games.csv'
+EXTRAS_DATA_FILE = 'files/extras.csv'
+
 HEADERS = {
     'Accept': '*/*',
     'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,es;q=0.6',
