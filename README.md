@@ -15,4 +15,5 @@ Parser get data from XBox games
 #### Вы можете запустить этот проект локально просто сделав следующее:
 - `git clone https://github.com/slychagin/XBoxParser.git`;
 - у вас должен быть установлен Python;
-- установите все зависимости из файла requirements.txt.
+- установите все зависимости из файла requirements.txt;
+- запустить файл main.py (количество игр, которое необходимо спарсить, можно изменить в файле input_data.py)
