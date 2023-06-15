@@ -71,7 +71,6 @@ class XboxParser:
             print(e)
         finally:
             self.driver.close()
-            self.driver.quit()
 
     def get_game_urls(self) -> None:
         """Get from html source file all urls"""
