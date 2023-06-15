@@ -121,19 +121,20 @@ class XboxParser:
             collection_urls = self.get_collection_urls(soup)
             if collection_urls:
                 for link in collection_urls:
-                    extra_soup = self.get_soup(link)
-                    title = self.get_title(extra_soup)
-                    price_data = self.get_price(extra_soup)
-                    release_date = self.release_date(extra_soup)
+                    if link not in urls:
+                        extra_soup = self.get_soup(link)
+                        title = self.get_title(extra_soup)
+                        price_data = self.get_price(extra_soup)
+                        release_date = self.release_date(extra_soup)
 
-                    games_data.append({
-                        'title': title,
-                        'price': price_data[0],
-                        'discount': price_data[1],
-                        'discount_price': price_data[2],
-                        'release_date': release_date
-                    })
-                    time.sleep(0.5)
+                        games_data.append({
+                            'title': title,
+                            'price': price_data[0],
+                            'discount': price_data[1],
+                            'discount_price': price_data[2],
+                            'release_date': release_date
+                        })
+                        time.sleep(0.5)
 
             # Get game extras
             extras = self.get_game_extras(title, soup)
